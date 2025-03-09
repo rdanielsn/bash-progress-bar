@@ -3,19 +3,30 @@
 BAR_CHAR="="
 
 function progress_setup() {
-    N="$1"
-    N_REMAIN="$(($N - 1))"
-    echo "setup for $N number of process"
-    BAR=""
-    echo ""
+    N_PROCESS="$1"
+    BAR_MAX_SIZE=20
+
+    PERCENTAGE=0
+
+    BAR_SIZE=0
+    BAR=$(printf "%${BAR_SIZE}s" | tr ' ' "$BAR_CHAR")
+
+    BLANK_SIZE=$((BAR_MAX_SIZE - BAR_SIZE))
+    BLANK=$(printf "%${BLANK_SIZE}s")
+
+    printf "\r[%s%s] %s%%" "$BAR" "$BLANK" "$PERCENTAGE"
 }
 
 function progress_update() {
     local step="$1"
-    BAR+="$BAR_CHAR"
 
-    BLANK_SPACE=$(printf "%${N_REMAIN}s")
-    N_REMAIN=$(($N_REMAIN - 1))
+    PERCENTAGE=$(bc <<<" 100 * $step / $N_PROCESS")
 
-    printf "\r[%s%s] %s" "$BAR" "$BLANK_SPACE" "$step"
+    BAR_SIZE=$(bc <<<"$PERCENTAGE * $BAR_MAX_SIZE / 100")
+    BAR=$(printf "%${BAR_SIZE}s" | tr ' ' "$BAR_CHAR")
+
+    BLANK_SIZE=$((BAR_MAX_SIZE - BAR_SIZE))
+    BLANK=$(printf "%${BLANK_SIZE}s")
+
+    printf "\r[%s%s] %s%%" "$BAR" "$BLANK" "$PERCENTAGE"
 }
