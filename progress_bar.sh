@@ -3,7 +3,8 @@
 BAR_CHAR="="
 
 function progress_setup() {
-    local N="$1"
+    N="$1"
+    N_REMAIN="$(($N - 1))"
     echo "setup for $N number of process"
     BAR=""
     echo ""
@@ -12,5 +13,9 @@ function progress_setup() {
 function progress_update() {
     local step="$1"
     BAR+="$BAR_CHAR"
-    printf "\ri: %s | bar: %s" "$step" "$BAR"
+
+    BLANK_SPACE=$(printf "%${N_REMAIN}s")
+    N_REMAIN=$(($N_REMAIN - 1))
+
+    printf "\r[%s%s] %s" "$BAR" "$BLANK_SPACE" "$step"
 }
